@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using CustomerChurn.Server.Data;
+using CustomerChurn.Shared;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -24,6 +26,13 @@ namespace CustomerChurn.Server
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var mapperConfiguration = new MapperConfiguration(config =>
+            {
+                config.CreateMap<Customer, CustomerViewModel>();
+            });
+
+            services.AddSingleton<IMapper>(serviceProvider => mapperConfiguration.CreateMapper());
+
             services.AddDbContext<ApplicationDbContext>(options =>
             {
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultDatabase"));

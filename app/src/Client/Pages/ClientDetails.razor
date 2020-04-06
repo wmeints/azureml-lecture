@@ -1,0 +1,89 @@
+@page "/Customers/{CustomerId}"
+@inject IDataService Data
+@inject IChurnModel Churn
+@using System.Data
+@using CustomerChurn.Shared
+
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <a href="/">&lt; Home</a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <h1>Customer details - @CustomerId</h1>
+            </div>
+        </div>
+        @if (!IsLoading)
+        {
+            <div class="row mt-4">
+                <div class="col">
+                    <h2>Likelihood the customer will cancel subscription</h2>
+                    <div class="progress">
+                        <div class="progress-bar" role="progressbar" aria-valuenow="@ChurnPercentage" aria-valuemin="0" aria-valuemax="100" style="width: @(ChurnPercentage)px"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col">
+                    <h2>Customer properties</h2>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <div class="row">
+                        <div class="col">Internet service</div>
+                        <div class="col">@Customer.InternetService</div>
+                    </div>
+                    <div class="row">
+                        <div class="col">Phone service</div>
+                        <div class="col">@Customer.PhoneService</div>
+                    </div>
+                    <div class="row">
+                        <div class="col">Online security</div>
+                        <div class="col">@Customer.OnlineSecurity</div>
+                    </div>
+                    <div class="row">
+                        <div class="col">Online backup</div>
+                        <div class="col">@Customer.OnlineBackup</div>
+                    </div>
+                    <div class="row">
+                        <div class="col">Streaming TV</div>
+                        <div class="col">@Customer.StreamingTV</div>
+                    </div>
+                    <div class="row">
+                        <div class="col">Streaming movies</div>
+                        <div class="col">@Customer.StreamingMovies</div>
+                    </div>
+                    <div class="row">
+                        <div class="col">Contract</div>
+                        <div class="col">@Customer.Contract</div>
+                    </div>
+                    <div class="row">
+                        <div class="col">Payment method</div>
+                        <div class="col">@Customer.PaymentMethod</div>
+                    </div>
+                </div>
+                <div class="col">
+
+                </div>
+            </div>
+        }
+    </div>
+
+@code
+{
+    [Parameter] public string CustomerId { get; set; }
+    private CustomerViewModel Customer { get; set; }
+    private bool IsLoading { get; set; } = true;
+    private int ChurnPercentage { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Customer = await Data.GetCustomerAsync(CustomerId);
+        ChurnPercentage = (int)Math.Floor((await Churn.Predict(Customer)).First() * 100.0m);
+
+        IsLoading = false;
+    }
+}

@@ -1,27 +1,21 @@
-<CascadingAuthenticationState>
-    <Router AppAssembly="@typeof(Program).Assembly">
-        <Found Context="routeData">
-            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
-                <NotAuthorized>
-                    <RedirectToLogin />
-                </NotAuthorized>
-            </AuthorizeRouteView>
-        </Found>
-        <NotFound>
-            <LayoutView Layout="@typeof(MainLayout)">
-                <div class="container">
-                    <div class="row">
-                        <div class="col">
-                            <div class="jumbotron">
-                                <h1 class="display-4">404</h1>
-                                <p>No content was found at this location.</p>
-                                <hr class="my-4">
-                                <a href="/" class="btn btn-primary btn-lg">Homepage</a>
-                            </div>
+<Router AppAssembly="@typeof(Program).Assembly">
+    <Found Context="routeData">
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+    </Found>
+    <NotFound>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <div class="jumbotron">
+                            <h1 class="display-4">404</h1>
+                            <p>No content was found at this location.</p>
+                            <hr class="my-4">
+                            <a href="/" class="btn btn-primary btn-lg">Homepage</a>
                         </div>
                     </div>
                 </div>
-            </LayoutView>
-        </NotFound>
-    </Router>
-</CascadingAuthenticationState>
+            </div>
+        </LayoutView>
+    </NotFound>
+</Router>

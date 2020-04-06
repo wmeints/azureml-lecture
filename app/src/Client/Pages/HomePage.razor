@@ -1,0 +1,136 @@
+@page "/"
+@using System.Reflection
+@using System.Text.RegularExpressions
+@using CustomerChurn.Shared
+
+@inject IDataService Data
+@inject NavigationManager Navigation
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <h1>Customers</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">&nbsp;</th>
+                    <th scope="col">Customer ID</th>
+                    <th scope="col">Tenure</th>
+                    <th scope="col">Monthly charges</th>
+                </tr>
+                </thead>
+                <tbody>
+                @foreach (var item in Items)
+                {
+                    <tr>
+                        <td>
+                            <button type="button" class="btn btn-sm btn-secondary" @onclick="NavigateToDetails(item)">Details</button>
+                        </td>
+                        <td>
+                            @item.Id
+                        </td>
+                        <td>
+                            @item.Tenure months
+                        </td>
+                        <td>
+                            @item.MonthlyCharges.ToString("C2")
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            
+            <nav>
+                <ul class="pagination">
+                    <li class="page-item">
+                        <button type="button" class="page-link" @onclick="NavigateFirst">First</button>
+                    </li>
+                    @for (int index = MinRange; index < MaxRange; index++)
+                    {
+                        <li class="page-item @PagerItemClass(index)">
+                            <button type="button" class="page-link" @onclick="NavigatePage(index)">@(index + 1)</button>
+                        </li>
+                    }
+                    <li class="page-item">
+                        <button type="button" class="page-link" @onclick="NavigateLast">Last</button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+@code
+{
+    [Parameter] public int Page { get; set; } = 0;
+
+    private int TotalPages { get; set; }
+    private int MinRange { get; set; }
+    private int MaxRange { get; set; }
+    private IEnumerable<CustomerViewModel> Items { get; set; } = Enumerable.Empty<CustomerViewModel>();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        var queryString = new Uri(Navigation.Uri).Query;
+        var pageIndexPattern = new Regex("page=(\\S+)");
+        var pageIndexMatch = pageIndexPattern.Match(queryString);
+
+        if (pageIndexMatch.Success && Int32.TryParse(pageIndexMatch.Groups[1].Value, out var pageIndex))
+        {
+            Page = pageIndex;
+        }
+
+        await LoadCustomerData();
+    }
+
+    private async Task LoadCustomerData()
+    {
+        var results = await Data.GetCustomersAsync(Page);
+
+        TotalPages = results.TotalPages;
+        Items = results.Items;
+
+        MinRange = Math.Max(0, Page - 4);
+        MaxRange = Math.Min(Math.Max(10, Page + 5), TotalPages);
+
+        StateHasChanged();
+    }
+
+    private Action NavigateToDetails(CustomerViewModel customer)
+    {
+        return () =>
+        {
+            Navigation.NavigateTo($"/Customers/{customer.Id}");
+        };
+    }
+
+    private Func<Task> NavigatePage(int index)
+    {
+        return async () =>
+        {
+            Page = index;
+            await LoadCustomerData();
+        };
+    }
+
+    private string PagerItemClass(int index)
+    {
+        return Page == index ? "active" : "";
+    }
+
+    private async Task NavigateFirst()
+    {
+        Page = 0;
+        await LoadCustomerData();
+    }
+
+    private async Task NavigateLast()
+    {
+        Page = TotalPages - 1;
+        await LoadCustomerData();
+    }
+}
