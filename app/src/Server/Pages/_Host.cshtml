@@ -1,0 +1,31 @@
+@page
+@{
+    Layout = "Shared/_Layout.cshtml";
+}
+
+<app>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="jumbotron">
+                    <h1 class="display-4">Loading Customer Churn Demo</h1>
+                    <p class="lead">Get ready for some #awesomesauce</p>
+                    <hr class="my-4" />
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</app>
+
+@section Scripts {
+    <script src="/_content/Microsoft.AspNetCore.Components.WebAssembly.Authentication/AuthenticationService.js"></script>
+    <script src="/_framework/blazor.webassembly.js"></script>
+    <script>
+        window.setTitle = function setTitle(title) {
+            document.title = title + " - Customer Churn";
+        };
+    </script>
+}

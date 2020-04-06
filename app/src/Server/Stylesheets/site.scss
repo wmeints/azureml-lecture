@@ -1,0 +1,11 @@
+$fa-font-path: "/fonts";
+
+@import "../node_modules/bootstrap/scss/bootstrap.scss";
+@import "FontAwesome/fontawesome.scss";
+@import "FontAwesome/solid.scss";
+
+@import "timeline.scss";
+
+body {
+    padding-top: 80px;
+}
